@@ -283,3 +283,141 @@ const requestLiveStream = () => {
     progressDiv.innerHTML =
         'Ad (' + currentAdNum + ' of ' + totalAds + ') ' + remainingTime + 's';
   }
+
+  /**
+ * Handles ad break started.
+ * @param {!google.ima.dai.api.StreamEvent} e StreamEvent fired for ad break
+ *     start.
+ */
+const onAdBreakStarted = (e) => {
+    console.log('Ad Break Started');
+    isAdBreak = true;
+    videoElement.controls = true;
+    adUiDiv.style.display = 'block';
+    // Fixes an issue where slow-seeking into an ad causes the player to get stuck
+    // in a paused state.
+    videoElement.play();
+  }
+  
+  /**
+   * Handles ad break ended.
+   * @param {!google.ima.dai.api.StreamEvent} e Stream event fired for ad break
+   *     end.
+   */
+   
+   let holidayTimer = null;
+   
+  const onAdBreakEnded = (e) => {
+    console.log('Ad Break Ended');
+    isAdBreak = false;
+    videoElement.controls = true;
+    adUiDiv.style.display = 'none';
+    if (snapForwardTime && snapForwardTime > videoElement.currentTime) {
+      videoElement.currentTime = snapForwardTime;
+      snapForwardTime = null;
+    }
+    progressDiv.textContent = '';
+      adHoliday = true;
+      holidayTimer = setTimeout(()=> {console.log("ad holiday timer ended"); adHoliday = false;}, 1000 * 20);
+  }
+  
+  /**
+   *  Handles ad started and displays companion ad, if any.
+   */
+  const onAdStarted = (e) => {
+    const companionAds = e.getAd().getCompanionAds();
+    for (let i = 0; i < companionAds.length; i++) {
+      const companionAd = companionAds[i];
+      if (companionAd.getWidth() == 728 && companionAd.getHeight() == 90) {
+        companionDiv.innerHTML = companionAd.getContent();
+      }
+    }
+  }
+  
+  /**
+   * Loads and plays a Url.
+   * @param {string} url
+   */
+  const loadUrl = (url) => {
+    console.log('Loading:' + url);
+    hls.on(Hls.Events.MANIFEST_PARSED, () => {
+      console.log('Video Play');
+      let startTime = 0;
+      if (bookmarkTime) {
+        startTime = streamManager.streamTimeForContentTime(bookmarkTime);
+        // Seeking on load will trigger the onSeekEnd event, so treat this seek as
+        // if it's snapback. Without this, resuming at a bookmark will kick you
+        // back to the ad before the bookmark.
+        isSnapback = false;
+      }
+      hls.startLoad(startTime);
+      videoElement.addEventListener('loadedmetadata', () => {
+        videoElement.play();
+      });
+    });
+    hls.loadSource(url);
+    hls.attachMedia(videoElement);
+    videoElement.controls = true;
+  }
+  
+  /**
+   * Takes the current video time and snaps to the previous ad break if it was not
+   * played.
+   */
+  const onSeekEnd = () => {
+    if (isLiveStream) {
+      return;
+    }
+    if (isSnapback) {
+      isSnapback = false;
+      return;
+    }
+    const currentTime = videoElement.currentTime;
+    const previousCuePoint =
+        streamManager.previousCuePointForStreamTime(currentTime);
+    if (!adHoliday && previousCuePoint && !previousCuePoint.played) {
+      console.log(
+          'Seeking back to ' + previousCuePoint.start + ' and will return to ' +
+          currentTime);
+      console.log(previousCuePoint) 
+          try { previousCuePoint.played = true; 
+              console.log(JSON.stringify(previousCuePoint)) 
+              previousCuePoint.played = false; 
+              console.log(JSON.stringify(previousCuePoint)) } 
+              catch (err) { console.log(err) }
+      isSnapback = false;
+      snapForwardTime = currentTime;
+      videoElement.currentTime = previousCuePoint.start;
+    }
+  }
+  
+  let adHoliday = false;
+  
+  const shouldSnapback = () => {
+      console.log({ adHoliday, isSnapback})
+      return !adHoliday && isSnapback;
+      console.log({ adHoliday, isSnapback})
+  }
+  
+  /**
+   * Shows the video controls so users can resume after stream is paused.
+   */
+  const onStreamPause = () => {
+    console.log('paused');
+    if (isAdBreak) {
+      videoElement.controls = true;
+      adUiDiv.style.display = 'none';
+    }
+  }
+  
+  /**
+   * Hides the video controls if resumed during an ad break.
+   */
+  const onStreamPlay = () => {
+    console.log('played');
+    if (isAdBreak) {
+      videoElement.controls = false;
+      adUiDiv.style.display = 'block';
+    }
+  }
+  
