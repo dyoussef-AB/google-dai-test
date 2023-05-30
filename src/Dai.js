@@ -86,7 +86,83 @@ let isAdBreak;
 /**
  * Initializes the page.
  */
-function initPage() {
+const initPage = () => {
   initUI();
   initPlayer();
 }
+
+const initUI = () => {
+    liveRadio = document.getElementById('live-radio');
+    vodRadio = document.getElementById('vod-radio');
+    liveFakeLink = document.getElementById('sample-live-link');
+    vodFakeLink = document.getElementById('sample-vod-link');
+    liveInputs = document.getElementById('live-inputs');
+    vodInputs = document.getElementById('vod-inputs');
+    assetKeyInput = document.getElementById('asset-key');
+    liveAPIKeyInput = document.getElementById('live-api-key');
+    cmsIdInput = document.getElementById('cms-id');
+    videoIdInput = document.getElementById('video-id');
+    vodAPIKeyInput = document.getElementById('vod-api-key');
+  
+    liveRadio.addEventListener('click', onLiveRadioClick);
+  
+    vodRadio.addEventListener('click', onVODRadioClick);
+  
+    liveFakeLink.addEventListener('click', () => {
+      onLiveRadioClick();
+      assetKeyInput.value = TEST_ASSET_KEY;
+    });
+  
+    vodFakeLink.addEventListener('click', () => {
+      onVODRadioClick();
+      cmsIdInput.value = 2489270;
+      videoIdInput.value = 9000000000067127;
+    });
+}
+
+const initPlayer = () => {
+    videoElement = document.getElementById('content');
+    playButton = document.getElementById('play-button');
+    bookmarkButton = document.getElementById('bookmark-button');
+    adUiDiv = document.getElementById('ad-ui');
+    progressDiv = document.getElementById('progress');
+    companionDiv = document.getElementById('companion');
+  
+    const queryParams = getQueryParams();
+    bookmarkTime = parseInt(queryParams['bookmark']) || null;
+  
+    videoElement.addEventListener('seeked', onSeekEnd);
+    videoElement.addEventListener('pause', onStreamPause);
+    videoElement.addEventListener('play', onStreamPlay);
+  
+    streamManager = new google.ima.dai.api.StreamManager(videoElement, adUiDiv);
+    streamManager.addEventListener(
+        google.ima.dai.api.StreamEvent.Type.LOADED, onStreamLoaded, false);
+    streamManager.addEventListener(
+        google.ima.dai.api.StreamEvent.Type.ERROR, onStreamError, false);
+    streamManager.addEventListener(
+        google.ima.dai.api.StreamEvent.Type.AD_PROGRESS, onAdProgress, false);
+    streamManager.addEventListener(
+        google.ima.dai.api.StreamEvent.Type.AD_BREAK_STARTED, onAdBreakStarted,
+        false);
+    streamManager.addEventListener(
+        google.ima.dai.api.StreamEvent.Type.AD_BREAK_ENDED, onAdBreakEnded,
+        false);
+    streamManager.addEventListener(
+        google.ima.dai.api.StreamEvent.Type.STARTED, onAdStarted, false);
+  
+    hls.on(Hls.Events.FRAG_PARSING_METADATA, function(event, data) {
+      if (streamManager && data) {
+        // For each ID3 tag in our metadata, we pass in the type - ID3, the
+        // tag data (a byte array), and the presentation timestamp (PTS).
+        data.samples.forEach(function(sample) {
+          streamManager.processMetadata('ID3', sample.data, sample.pts);
+        });
+      }
+    });
+  
+    playButton.addEventListener('click', onPlayButtonClick);
+    bookmarkButton.addEventListener('click', onBookmarkButtonClick);
+  }
+
+  
