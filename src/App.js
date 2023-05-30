@@ -4,7 +4,6 @@ import './App.css';
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
       <div id="container">
           <header>IMA SDK DAI Demo (HLS.JS)</header>
 
@@ -57,7 +56,6 @@ function App() {
         >
           Learn React
         </a>
-      </header>
     </div>
   );
 }
