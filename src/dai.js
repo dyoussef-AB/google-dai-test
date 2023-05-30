@@ -87,7 +87,40 @@ let isAdBreak;
  * Initializes the page.
  */
 
+function initPage() {
+    initUI();
+    initPlayer();
+  }
 
 /**
  * Initializes the UI.
  */
+
+function initUI() {
+    liveRadio = document.getElementById('live-radio');
+    vodRadio = document.getElementById('vod-radio');
+    liveFakeLink = document.getElementById('sample-live-link');
+    vodFakeLink = document.getElementById('sample-vod-link');
+    liveInputs = document.getElementById('live-inputs');
+    vodInputs = document.getElementById('vod-inputs');
+    assetKeyInput = document.getElementById('asset-key');
+    liveAPIKeyInput = document.getElementById('live-api-key');
+    cmsIdInput = document.getElementById('cms-id');
+    videoIdInput = document.getElementById('video-id');
+    vodAPIKeyInput = document.getElementById('vod-api-key');
+  
+    liveRadio.addEventListener('click', onLiveRadioClick);
+  
+    vodRadio.addEventListener('click', onVODRadioClick);
+  
+    liveFakeLink.addEventListener('click', () => {
+      onLiveRadioClick();
+      assetKeyInput.value = TEST_ASSET_KEY;
+    });
+  
+    vodFakeLink.addEventListener('click', () => {
+      onVODRadioClick();
+      cmsIdInput.value = 2489270;
+      videoIdInput.value = 9000000000067127;
+    });
+  }
