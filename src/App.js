@@ -1,5 +1,5 @@
 import './App.css';
-import './dai.js';
+import './Dai.js';
 
 function App() {
   return (
