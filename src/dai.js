@@ -86,10 +86,7 @@ let isAdBreak;
 /**
  * Initializes the page.
  */
-function initPage() {
-  initUI();
-  initPlayer();
-}
+
 
 /**
  * Initializes the UI.
