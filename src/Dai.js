@@ -1,3 +1,4 @@
+import {Hls} from 'hls';
 // This stream will be played if ad-enabled playback fails.
 
 const BACKUP_STREAM =
@@ -16,6 +17,7 @@ let streamManager;
 
 // hls.js video player.
 const hls = new Hls({autoStartLoad: false});
+const google = window.google;
 
 // Radio button for Live Stream.
 let liveRadio;
@@ -188,7 +190,7 @@ const onVODRadioClick = () => {
    */
   const getQueryParams = () => {
     const returnVal = {};
-    const pairs = location.search.substring(1).split('&');
+    const pairs = window.location.search.substring(1).split('&');
     for (let i = 0; i < pairs.length; i++) {
       const pair = pairs[i].split('=');
       returnVal[pair[0]] = decodeURIComponent(pair[1]);
@@ -223,7 +225,7 @@ const onVODRadioClick = () => {
     }
     const bookmarkTime = Math.floor(
         streamManager.contentTimeForStreamTime(videoElement.currentTime));
-    history.pushState(null, null, 'dai.html?bookmark=' + bookmarkTime);
+    window.history.pushState(null, null, 'dai.html?bookmark=' + bookmarkTime);
   }
 
   /**
@@ -421,3 +423,4 @@ const onAdBreakStarted = (e) => {
     }
   }
   
+  export default initPage;

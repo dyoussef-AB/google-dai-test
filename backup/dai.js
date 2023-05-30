@@ -1,3 +1,4 @@
+import {hls} from 'Hls';
 // This stream will be played if ad-enabled playback fails.
 
 const BACKUP_STREAM =
@@ -82,6 +83,8 @@ let isLiveStream;
 
 // Whether the stream is currently in an ad break.
 let isAdBreak;
+
+const google = window.google;
 
 /**
  * Initializes the page.

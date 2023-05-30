@@ -1,5 +1,6 @@
 import './App.css';
 import './Dai.js';
+import initPage from './Dai';
 
 function App() {
   return (
@@ -8,7 +9,7 @@ function App() {
         <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
         <script type="text/javascript" src="https://imasdk.googleapis.com/js/sdkloader/ima3_dai.js"></script>
       </header>
-      <body onLoad="initPage()">
+      <body onLoad={initPage}>
         <div id="container">
             <header>IMA SDK DAI Demo (HLS.JS)</header>
             <div id="input-wrapper">
