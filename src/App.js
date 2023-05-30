@@ -15,7 +15,7 @@ function App() {
               <strong>Stream type:</strong>
               <div class="radio-group">
                 <input type="radio" id="live-radio" name="stream-type" checked/>
-                <label for="live-radio">Live (<span id="sample-live-link" class="link">Sample</span>)</label>
+                <label for="live-radio">Lidve (<span id="sample-live-link" class="link">Sample</span>)</label>
               </div>
               <div class="radio-group">
                 <input type="radio" id="vod-radio" name="stream-type"/>
