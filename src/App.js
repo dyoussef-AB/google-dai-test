@@ -4,6 +4,12 @@ import './dai.js';
 function App() {
   return (
     <div className="App">
+      <head>
+      <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+      <script type="text/javascript" src="https://imasdk.googleapis.com/js/sdkloader/ima3_dai.js"></script>
+      <script src="dai.js"></script>
+      </head>
+      <body onLoad="initPage()">
       <div id="container">
           <header>IMA SDK DAI Demo (HLS.JS)</header>
 
@@ -44,7 +50,9 @@ function App() {
           </div>
           <div id="companion"></div>
         </div>
+        </body>
     </div>
+    
   );
 }
 
