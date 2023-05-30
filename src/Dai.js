@@ -165,4 +165,63 @@ const initPlayer = () => {
     bookmarkButton.addEventListener('click', onBookmarkButtonClick);
   }
 
+  /**
+ * Displays the live inputs and hides the VOD inputs.
+ */
+const onLiveRadioClick = () => {
+    vodInputs.style.display = 'none';
+    liveInputs.style.display = 'block';
+  }
   
+  /**
+   * Displays the VOD inputs and hides the live inputs.
+   */
+const onVODRadioClick = () => {
+    liveInputs.style.display = 'none';
+    vodInputs.style.display = 'block';
+  }
+  
+  /**
+   * Returns a dictionary of key-value pairs from a GET query string.
+   * @return {!Object} Key-value dictionary for keys and values in provided query
+   *     string.
+   */
+  const getQueryParams = () => {
+    const returnVal = {};
+    const pairs = location.search.substring(1).split('&');
+    for (let i = 0; i < pairs.length; i++) {
+      const pair = pairs[i].split('=');
+      returnVal[pair[0]] = decodeURIComponent(pair[1]);
+    }
+    return returnVal;
+  }
+  
+  /**
+   * Handles play button clicks by requesting a stream. Also removes itself so we
+   * don't request more streams on subsequent clicks.
+   */
+  const onPlayButtonClick = () => {
+    if (liveRadio.checked) {
+      requestLiveStream();
+    } else {
+      requestVODStream();
+    }
+  }
+  
+  /**
+   * Gets the current bookmark time and saves it to a URL param.
+   */
+  const onBookmarkButtonClick = () => {
+    // Handles player not ready or current time = 0
+    if (!videoElement.currentTime) {
+      alert(
+          'Error: could not get current time of video element, or current time is 0');
+      return;
+    }
+    if (isLiveStream) {
+      alert('Error: this functionality only works for VOD streams');
+    }
+    const bookmarkTime = Math.floor(
+        streamManager.contentTimeForStreamTime(videoElement.currentTime));
+    history.pushState(null, null, 'dai.html?bookmark=' + bookmarkTime);
+  }
