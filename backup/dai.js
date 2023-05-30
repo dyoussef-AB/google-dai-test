@@ -1,4 +1,3 @@
-import {hls} from 'Hls';
 // This stream will be played if ad-enabled playback fails.
 
 const BACKUP_STREAM =
