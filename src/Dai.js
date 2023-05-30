@@ -225,3 +225,61 @@ const onVODRadioClick = () => {
         streamManager.contentTimeForStreamTime(videoElement.currentTime));
     history.pushState(null, null, 'dai.html?bookmark=' + bookmarkTime);
   }
+
+  /**
+ * Requests a Live stream with ads.
+ */
+const requestLiveStream = () => {
+    isLiveStream = true;
+    const streamRequest = new google.ima.dai.api.LiveStreamRequest();
+    streamRequest.assetKey = assetKeyInput.value;
+    streamRequest.apiKey = liveAPIKeyInput.value || '';
+    streamManager.requestStream(streamRequest);
+  }
+  
+  /**
+   * Requests a VOD stream with ads.
+   */
+  const requestVODStream = () => {
+    isLiveStream = false;
+    const streamRequest = new google.ima.dai.api.VODStreamRequest();
+    streamRequest.contentSourceId = cmsIdInput.value;
+    streamRequest.videoId = videoIdInput.value;
+    streamRequest.apiKey = vodAPIKeyInput.value;
+    streamManager.requestStream(streamRequest);
+  }
+  
+  /**
+   * Loads the stream.
+   * @param {!google.ima.dai.api.StreamEvent} e StreamEvent fired when stream is
+   *     loaded.
+   */
+  const onStreamLoaded = (e) => {
+    console.log('Stream loaded');
+    loadUrl(e.getStreamData().url);
+  }
+  
+  /**
+   * Handles stream errors. Plays backup content.
+   * @param {!google.ima.dai.api.StreamEvent} e StreamEvent fired on stream error.
+   */
+  const onStreamError = (e) => {
+    console.log('Error loading stream, playing backup stream.' + e);
+    loadUrl(BACKUP_STREAM);
+  }
+  
+  /**
+   * Updates the progress div.
+   * @param {!google.ima.dai.api.StreamEvent} e StreamEvent fired when ad
+   *     progresses.
+   */
+  const onAdProgress = (e) => {
+    const adProgressData = e.getStreamData().adProgressData;
+    const currentAdNum = adProgressData.adPosition;
+    const totalAds = adProgressData.totalAds;
+    const currentTime = adProgressData.currentTime;
+    const duration = adProgressData.duration;
+    const remainingTime = Math.floor(duration - currentTime);
+    progressDiv.innerHTML =
+        'Ad (' + currentAdNum + ' of ' + totalAds + ') ' + remainingTime + 's';
+  }
